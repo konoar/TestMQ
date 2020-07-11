@@ -74,7 +74,7 @@ static int ksFork(pid_t *pid, int mqid)
     sprintf(mqidstr, "%d", mqid);
 
     if (0 == (*pid = vfork())) {
-        execve(KS_EXE_CLIENT, param, env);
+        (void) execve(KS_EXE_CLIENT, param, env);
         return KS_NG;
     }
 
