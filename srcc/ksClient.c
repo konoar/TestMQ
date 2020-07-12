@@ -14,7 +14,7 @@
 int main(int argc, const char *argv[])
 {
 
-    int         mid     = -1;
+    int         mqid    = -1;
     int         abort   =  0;
     char        *end;
     ksMessage   msg;
@@ -23,13 +23,13 @@ int main(int argc, const char *argv[])
         return KS_NG;
     }
 
-    if (0 == (mid = strtol(argv[1], &end, 10)) || end != argv[1] + strlen(argv[1])) {
+    if (0 == (mqid = strtol(argv[1], &end, 10)) || end != argv[1] + strlen(argv[1])) {
         return KS_NG;
     }
 
     do {
 
-        if (0 > msgrcv(mid, &msg, KS_MSG_MAX, 0, IPC_NOWAIT)) {
+        if (0 > msgrcv(mqid, &msg, KS_MSG_MAX, 0, IPC_NOWAIT)) {
 
             if (ENOMSG == errno)    KS_SLEEP(500);
             else                    return KS_NG;
