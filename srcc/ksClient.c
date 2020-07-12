@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/msg.h>
 
@@ -28,19 +29,24 @@ int main(int argc, const char *argv[])
 
     do {
 
-        if (0 > msgrcv(mid, &msg, KS_MSG_MAX, 0, 0)) {
-            break;
-        }
+        if (0 > msgrcv(mid, &msg, KS_MSG_MAX, 0, IPC_NOWAIT)) {
 
-        switch (msg.type) {
+            if (ENOMSG == errno)    KS_SLEEP(500);
+            else                    return KS_NG;
 
-            case KS_MSG_PRINT:
-                printf("%s\n", msg.message);
-                break;
+        } else {
 
-            case KS_MSG_KILL:
-                abort = 1;
-                break;
+            switch (msg.type) {
+
+                case KS_MSG_PRINT:
+                    printf("%s\n", msg.message);
+                    break;
+
+                case KS_MSG_KILL:
+                    abort = 1;
+                    break;
+
+            }
 
         }
 

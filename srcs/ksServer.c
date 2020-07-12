@@ -105,6 +105,8 @@ int main(int argc, const char *argv[])
             break;
         }
 
+        KS_SLEEP(2 * 1000);
+
         if (KS_OK != ksMsgSend(mqid, KS_MSG_PRINT, "Msg2")) {
             break;
         }
