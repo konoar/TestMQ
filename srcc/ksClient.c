@@ -19,11 +19,13 @@ int main(int argc, const char *argv[])
     char        *end;
     ksMessage   msg;
 
-    if (2 != argc) {
+    if (2 != argc || !argv[1] || 0 == strlen(argv[1])) {
         return KS_NG;
     }
 
-    if (0 == (mqid = strtol(argv[1], &end, 10)) || end != argv[1] + strlen(argv[1])) {
+    mqid = strtol(argv[1], &end, 10);
+
+    if (end != argv[1] + strlen(argv[1])) {
         return KS_NG;
     }
 
