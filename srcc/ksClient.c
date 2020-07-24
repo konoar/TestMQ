@@ -20,13 +20,13 @@ int main(int argc, const char *argv[])
     ksMessage   msg;
 
     if (2 != argc || !argv[1] || 0 == strlen(argv[1])) {
-        return KS_NG;
+        exit(EXIT_FAILURE);
     }
 
     mqid = strtol(argv[1], &end, 10);
 
     if (end != argv[1] + strlen(argv[1])) {
-        return KS_NG;
+        exit(EXIT_FAILURE);
     }
 
     do {
@@ -34,7 +34,7 @@ int main(int argc, const char *argv[])
         if (0 > msgrcv(mqid, &msg, KS_MSG_MAX, 0, IPC_NOWAIT)) {
 
             if (ENOMSG == errno)    KS_SLEEP(500);
-            else                    return KS_NG;
+            else                    exit(EXIT_FAILURE);
 
         } else {
 
@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
 
     } while(!abort);
 
-    return KS_OK;
+    exit(EXIT_SUCCESS);
 
 }
 
