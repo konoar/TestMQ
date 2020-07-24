@@ -6,6 +6,7 @@
 #include "ksDefine.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -86,15 +87,14 @@ int main(int argc, const char *argv[])
 {
 
     pid_t pid;
-    int   status;
-    int   mqid;
+    int status, mqid, ecode = EXIT_SUCCESS;
 
     if (KS_OK != ksMqCreate(&mqid)) {
-        return KS_NG;
+        exit(EXIT_FAILURE);
     }
 
     if (KS_OK != ksFork(&pid, mqid)) {
-        return KS_NG;
+        exit(EXIT_FAILURE);
     }
 
     do {
@@ -108,28 +108,39 @@ int main(int argc, const char *argv[])
         KS_SLEEP(2 * 1000);
 
         if (KS_OK != ksMsgSend(mqid, KS_MSG_PRINT, "Msg2")) {
+            ecode = EXIT_FAILURE;
             break;
         }
 
         if (KS_OK != ksMsgSend(mqid, KS_MSG_PRINT, NULL)) {
+            ecode = EXIT_FAILURE;
             break;
         }
 
         if (KS_OK != ksMsgSend(mqid, KS_MSG_KILL, NULL)) {
+            ecode = EXIT_FAILURE;
             break;
         }
 
-        waitpid(pid, &status, 0); 
+        while (1) {
+            if (-1 == waitpid(pid, &status, 0)) {
+                ecode = EXIT_FAILURE;
+                break;
+            } else if (WIFEXITED(status)) {
+                printf("Exited\n");
+                break;
+            }
+        }
 
     } while(0);
 
     printf("Server End\n");
 
     if (KS_OK != ksMqRelease(mqid)) {
-        return KS_NG;
+        ecode = EXIT_FAILURE;
     }
 
-    return KS_OK;
+    exit(ecode);
 
 }
 
